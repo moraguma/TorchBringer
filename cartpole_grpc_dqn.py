@@ -73,8 +73,6 @@ run["hparams"] = config
 
 steps_done = 0
 
-episode_durations = []
-
 if torch.cuda.is_available():
     print("Running on GPU!")
     num_episodes = 600
@@ -85,18 +83,16 @@ else:
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
     state, info = env.reset()
-    reward = torch.tensor([0.0], device=device)
+    reward = 0.0
     terminal = False
     
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         observation, reward, terminated, truncated, _ = env.step(int(dqn.step(state, reward, terminal).item()))
         state = None if terminated else torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0) 
-        reward = torch.tensor([reward], device=device)
         terminal = terminated or truncated
 
         if terminal:
-            episode_durations.append(t + 1)
             run.track({"Duration": t + 1}, step=i_episode)
 
             dqn.experience_and_optimize(state, reward, terminal)

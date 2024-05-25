@@ -70,8 +70,6 @@ run["hparams"] = config
 
 steps_done = 0
 
-episode_durations = []
-
 if torch.cuda.is_available():
     print("Running on GPU!")
     num_episodes = 600
@@ -93,7 +91,6 @@ for i_episode in range(num_episodes):
         terminal = terminated or truncated
 
         if terminal:
-            episode_durations.append(t + 1)
             run.track({"Duration": t + 1}, step=i_episode)
 
             dqn.experience_and_optimize(state, reward, terminal)
