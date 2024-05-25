@@ -13,7 +13,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 from components.replay_memory import ReplayMemory, Transition
-import components.sequential_builder as sb
+import components.builders as builders
 
 # BATCH_SIZE is the number of transitions sampled from the replay buffer
 # GAMMA is the discount factor as mentioned in the previous section
@@ -41,26 +41,6 @@ env = gym.make("CartPole-v1")
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class DQN(nn.Module):
-
-    def __init__(self, n_observations, n_actions):
-        # https://pytorch.org/docs/stable/generated/torch.nn.ModuleList.html
-        super(DQN, self).__init__()
-        self.layer1 = nn.Linear(n_observations, 128)
-        self.layer2 = nn.Linear(128, 128)
-        self.layer3 = nn.Linear(128, n_actions)
-
-    # Called with either one element to determine next action, or a batch
-    # during optimization. Returns tensor([[left0exp,right0exp]...]).
-    #
-    # Compiled into __call__
-    def forward(self, x):
-        x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        return self.layer3(x)
-
-
-
 def select_action(state):
     global steps_done
     sample = random.random()
@@ -86,28 +66,25 @@ n_observations = len(state)
 dqn_config = [
     {
         "type": "linear",
-        "in": n_observations,
-        "out": 128,
-        "activation": "relu"
+        "in_features": n_observations,
+        "out_features": 128,
     },
     {"type": "relu"},
     {
         "type": "linear",
-        "in": 128,
-        "out": 128,
-        "activation": "relu"
+        "in_features": 128,
+        "out_features": 128,
     },
     {"type": "relu"},
     {
         "type": "linear",
-        "in": 128,
-        "out": n_actions,
-        "activation": "relu"
+        "in_features": 128,
+        "out_features": n_actions,
     },
 ]
 
-policy_net = sb.build_from(dqn_config).to(device)
-target_net = sb.build_from(dqn_config).to(device)
+policy_net = builders.build_sequential(dqn_config).to(device)
+target_net = builders.build_sequential(dqn_config).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=config["LR"], amsgrad=True)
