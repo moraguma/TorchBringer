@@ -12,7 +12,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from replay_memory import ReplayMemory, Transition
+from components.replay_memory import ReplayMemory, Transition
+import components.sequential_builder as sb
 
 # BATCH_SIZE is the number of transitions sampled from the replay buffer
 # GAMMA is the discount factor as mentioned in the previous section
@@ -43,6 +44,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class DQN(nn.Module):
 
     def __init__(self, n_observations, n_actions):
+        # https://pytorch.org/docs/stable/generated/torch.nn.ModuleList.html
         super(DQN, self).__init__()
         self.layer1 = nn.Linear(n_observations, 128)
         self.layer2 = nn.Linear(128, 128)
@@ -81,8 +83,31 @@ n_actions = env.action_space.n
 state, info = env.reset()
 n_observations = len(state)
 
-policy_net = DQN(n_observations, n_actions).to(device)
-target_net = DQN(n_observations, n_actions).to(device)
+dqn_config = [
+    {
+        "type": "linear",
+        "in": n_observations,
+        "out": 128,
+        "activation": "relu"
+    },
+    {"type": "relu"},
+    {
+        "type": "linear",
+        "in": 128,
+        "out": 128,
+        "activation": "relu"
+    },
+    {"type": "relu"},
+    {
+        "type": "linear",
+        "in": 128,
+        "out": n_actions,
+        "activation": "relu"
+    },
+]
+
+policy_net = sb.build_from(dqn_config).to(device)
+target_net = sb.build_from(dqn_config).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=config["LR"], amsgrad=True)
@@ -127,9 +152,9 @@ def optimize_model():
     # This is merged based on the mask, such that we'll have either the expected
     # state value or 0 in case the state was final.
     next_state_values = torch.zeros(config["BATCH_SIZE"], device=device)
-    with torch.no_grad():
+    with torch.no_grad(): # Disables gradient calculation for optimization
         next_state_values[non_final_mask] = target_net(non_final_next_states).max(1).values
-    # Compute the expected Q values
+    # Compute the expected Q values (r +  γ max_a ​Q(s′,a))
     expected_state_action_values = (next_state_values * config["GAMMA"]) + reward_batch
 
     # Compute Huber loss
