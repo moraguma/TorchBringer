@@ -1,15 +1,44 @@
+import gymnasium as gym
 import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
 
+from components import epsilon
 
+
+EPSILON_STRING_TO_FUNC = {
+    "exp_decrease": epsilon.exp_decrease
+}
 LAYER_STRING_TO_CLASS = {
     "linear": nn.Linear,
     "relu": nn.ReLU
 }
+LOSS_STRING_TO_FUNC = {
+    "smooth_l1_loss": nn.SmoothL1Loss()
+}
 OPTIMIZER_STRING_TO_CLASS = {
     "adamw": optim.AdamW
 }
+
+
+def build_action_space(config) -> gym.Space:
+    """
+    Receives a config dictionary that specifies an action space. The specific parameters required depend on the
+    space type
+
+    If given a space, will simply return it
+    """
+    # TODO: Implement support for dictionary action spaces
+    if isinstance(config, gym.Space):
+        return config
+
+
+def build_epsilon(config) -> epsilon.Epsilon:
+    """
+    Receives a config dictionary that specifies the type and parameters of epsilon. The specific parameters
+    required depend on the epsilon type
+    """
+    return epsilon.Epsilon(EPSILON_STRING_TO_FUNC[config["type"]], **build_kwargs(config))
 
 
 def build_sequential(config) -> nn.Sequential:
@@ -25,21 +54,31 @@ def build_sequential(config) -> nn.Sequential:
     return nn.Sequential(*layers)
 
 
-def build_optimizer(config) -> optim.Optimizer:
+def build_loss(type) -> callable:
+    """
+    Returns a loss function given its name
+    """
+    return LOSS_STRING_TO_FUNC[type]
+
+
+def build_optimizer(module: nn.Module, config) -> optim.Optimizer:
     """
     Receives a config dictionary that specifies the type and parameters of optimizer. The specific parameters
     required depend on the optimizer type
     """
-    return OPTIMIZER_STRING_TO_CLASS[config["type"]](**build_kwargs(config))
+    return OPTIMIZER_STRING_TO_CLASS[config["type"]](module.parameters(), **build_kwargs(config))
 
 
 def build_kwargs(config):
     """
     Should look for any necessary substitutions to specific objects or formats before building kwargs
     """
-    excludes = "type"
+    return build_excluding_dict(config, ["type"])
+
+
+def build_excluding_dict(dict, excludes):
     kwargs = {}
-    for k in config:
+    for k in dict:
         if not k in excludes:
-            kwargs[k] = config[k]
+            kwargs[k] = dict[k]
     return kwargs
