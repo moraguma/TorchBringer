@@ -4,8 +4,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from components import epsilon
+from learners.dqn import DQN
 
-
+LEARNER_STRING_TO_CLASS = {
+    "dqn": DQN
+}
 SPACE_STRING_TO_CLASS = {
     "discrete": gym.spaces.Discrete
 }
@@ -22,6 +25,14 @@ LOSS_STRING_TO_FUNC = {
 OPTIMIZER_STRING_TO_CLASS = {
     "adamw": optim.AdamW
 }
+
+def build_learner(config):
+    """
+    Receives a config dictionary that specifies a deep RL module. The specific parameters required depend on the
+    module type
+    """
+    return LEARNER_STRING_TO_CLASS[config["type"]](build_kwargs(config))
+
 
 
 def build_space(config) -> gym.Space:

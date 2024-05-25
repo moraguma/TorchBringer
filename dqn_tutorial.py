@@ -1,24 +1,12 @@
 # Based on https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
 
 import gymnasium as gym
-import math
-import random
-import matplotlib
-import matplotlib.pyplot as plt
-from collections import namedtuple, deque
 from itertools import count
 from aim import Run
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
 
-from components.replay_memory import ReplayMemory, Transition
-import components.builders as builders
-
-from modules.dqn import DQN
-import components.builders as builders
+from servers.TorchDeepRL import TorchDeepRL
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -31,6 +19,7 @@ state, info = env.reset()
 n_observations = len(state)
 
 config = {
+    "type": "dqn",
     "action_space": {
         "type": "discrete",
         "n": 2
@@ -72,7 +61,7 @@ config = {
         },
     ]
 }
-dqn = DQN(config)
+dqn = TorchDeepRL(config)
 run = Run(experiment="DQN Cartpole")
 
 run["hparams"] = config
@@ -106,8 +95,7 @@ for i_episode in range(num_episodes):
             episode_durations.append(t + 1)
             run.track({"Duration": t + 1}, step=i_episode)
 
-            dqn.experience(state, reward, terminal)
-            dqn.optimize()
+            dqn.experience_and_optimize(state, reward, terminal)
             break
 
 print('Complete')
