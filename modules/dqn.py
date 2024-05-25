@@ -38,7 +38,7 @@ class DQN():
     """
 
     def __init__(self, config):
-        self.action_space = builders.build_action_space(config["action_space"])
+        self.action_space = builders.build_space(config["action_space"])
 
         self.gamma = config["gamma"]
         self.tau = config["tau"]
@@ -63,7 +63,7 @@ class DQN():
         self.experience(state, reward, terminal)
         self.optimize()
         self.past_action = self.select_action(state)
-        
+
         return self.past_action
 
 

@@ -31,7 +31,10 @@ state, info = env.reset()
 n_observations = len(state)
 
 config = {
-    "action_space": env.action_space,
+    "action_space": {
+        "type": "discrete",
+        "n": 2
+    },
     "gamma": 0.99,
     "tau": 0.005,
     "epsilon": {
@@ -72,7 +75,7 @@ config = {
 dqn = DQN(config)
 run = Run(experiment="DQN Cartpole")
 
-run["hparams"] = builders.build_excluding_dict(config, "action_space")
+run["hparams"] = config
 
 
 steps_done = 0

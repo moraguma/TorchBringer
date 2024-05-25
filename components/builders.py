@@ -6,6 +6,9 @@ import torch.nn.functional as F
 from components import epsilon
 
 
+SPACE_STRING_TO_CLASS = {
+    "discrete": gym.spaces.Discrete
+}
 EPSILON_STRING_TO_FUNC = {
     "exp_decrease": epsilon.exp_decrease
 }
@@ -21,16 +24,18 @@ OPTIMIZER_STRING_TO_CLASS = {
 }
 
 
-def build_action_space(config) -> gym.Space:
+def build_space(config) -> gym.Space:
     """
     Receives a config dictionary that specifies an action space. The specific parameters required depend on the
     space type
 
     If given a space, will simply return it
     """
-    # TODO: Implement support for dictionary action spaces
     if isinstance(config, gym.Space):
         return config
+    return SPACE_STRING_TO_CLASS[config["type"]](**build_kwargs(config))
+
+
 
 
 def build_epsilon(config) -> epsilon.Epsilon:
