@@ -1,14 +1,14 @@
-This is an open-source framework that provides a simple interface for operating with pre-implemented deep reinforcement learning algorithms built on top of PyTorch. The interfaces provided can be used to operate deep RL agents either locally or remotely (via gRPC). Currently, this framework supports the following algorithms
+TorchBearer is an open-source framework that provides a simple interface for operating with pre-implemented deep reinforcement learning algorithms built on top of PyTorch. The interfaces provided can be used to operate deep RL agents either locally or remotely via gRPC. Currently, TorchBearer supports the following algorithms
 
 - [x] DQN
 
 ## Reference
 
-`cartpole_local_dqn.py` provides a simple example of this framework being used on gymnasium's CartPole-v1 envinronment. `cartpole_grpc_dqn.py` provides an example of how to use the gRPC interface to learn remotely.
+`cartpole_local_dqn.py` provides a simple example of TorchBearer being used on gymnasium's CartPole-v1 envinronment. `cartpole_grpc_dqn.py` provides an example of how to use the gRPC interface to learn remotely.
 
-The main class that is used in this framework is `TorchDeepRL`, implemented in `servers/`. The gRPC server has an interface very similar to it.
+The main class that is used in this framework is `TorchBearerAgent`, implemented in `servers/`. The gRPC server has an interface very similar to it.
 
-### TorchDeepRL
+### TorchBearerAgent
 | Method | Parameters | Explanation |
 |---|---|---|
 | initialize() | config: dict | Initializes the agent according to the config. Read the config section for information on formatting |
@@ -16,7 +16,7 @@ The main class that is used in this framework is `TorchDeepRL`, implemented in `
 | experience_and_optimize() | state: Tensor, reward: Tensor, terminal: bool | Performs an optimization step without selecting an action |
 
 ### gRPC interface
-Note that there is a client implemented in `servers/torch_deep_rl_grpc_client.py` that has the exact same interface as `TorchDeepRL`. This reference is mostly meant for building clients in other programming languages.
+Note that there is a client implemented in `servers/torchbearer_grpc_client.py` that has the exact same interface as `TorchBearerAgent`. This reference is mostly meant for building clients in other programming languages.
 
 | Method | Parameters | Explanation |
 |---|---|---|
@@ -76,5 +76,50 @@ You can read `components/epsilon.py` to see how each of these are implemented
 | linear | `torch.nn.Linear` |
 | relu | `torch.nn.ReLU` |
 
+### Example config
 
-
+``` python
+config = {
+    "type": "dqn",
+    "action_space": {
+        "type": "discrete",
+        "n": 2
+    },
+    "gamma": 0.99,
+    "tau": 0.005,
+    "epsilon": {
+        "type": "exp_decrease",
+        "start": 0.9,
+        "end": 0.05,
+        "steps_to_end": 1000
+    },
+    "batch_size": 128,
+    "grad_clip_value": 100,
+    "loss": "smooth_l1_loss",
+    "optimizer": {
+        "type": "adamw",
+        "lr": 1e-4, 
+        "amsgrad": True
+    },
+    "replay_buffer_size": 10000,
+    "network": [
+        {
+            "type": "linear",
+            "in_features": int(n_observations),
+            "out_features": 128,
+        },
+        {"type": "relu"},
+        {
+            "type": "linear",
+            "in_features": 128,
+            "out_features": 128,
+        },
+        {"type": "relu"},
+        {
+            "type": "linear",
+            "in_features": 128,
+            "out_features": int(n_actions),
+        },
+    ]
+}
+```
