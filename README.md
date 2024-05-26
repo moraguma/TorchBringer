@@ -1,14 +1,61 @@
-TorchBearer is an open-source framework that provides a simple interface for operating with pre-implemented deep reinforcement learning algorithms built on top of PyTorch. The interfaces provided can be used to operate deep RL agents either locally or remotely via gRPC. Currently, TorchBearer supports the following algorithms
+TorchBringer is an open-source framework that provides a simple interface for operating with pre-implemented deep reinforcement learning algorithms built on top of PyTorch. The interfaces provided can be used to operate deep RL agents either locally or remotely via gRPC. Currently, TorchBringer supports the following algorithms
 
 - [x] DQN
 
+## Quickstart
+
+To install TorchBringer, run
+
+```bash
+pip install --upgrade pip
+pip install torchbringer
+```
+
+Here's a simple project for running a TorchBringer agent on gymnasium's Cartpole environment.
+
+```python
+import gymnasium as gym
+from itertools import count
+import torch
+from torchbringer.servers.torchbringer_agent import TorchBringerAgent
+
+env = gym.make("CartPole-v1")
+state, info = env.reset()
+
+config = {
+    # Check the reference section to understand config formatting
+}
+
+dqn = TorchBringerAgent()
+dqn.initialize(config)
+steps_done = 0
+
+num_episodes = 600
+for i_episode in range(num_episodes):
+    # Initialize the environment and get its state
+    state, info = env.reset()
+    reward = torch.tensor([0.0], device=device)
+    terminal = False
+    
+    state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+    for t in count():
+        observation, reward, terminated, truncated, _ = env.step(dqn.step(state, reward, terminal).item())
+        state = None if terminated else torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0) 
+        reward = torch.tensor([reward], device=device)
+        terminal = terminated or truncated
+
+        if terminal:
+            dqn.step(state, reward, terminal)
+            break
+```
+
 ## Reference
 
-`cartpole_local_dqn.py` provides a simple example of TorchBearer being used on gymnasium's CartPole-v1 envinronment. `cartpole_grpc_dqn.py` provides an example of how to use the gRPC interface to learn remotely.
+`cartpole_local_dqn.py` provides a simple example of TorchBringer being used on gymnasium's CartPole-v1 envinronment. `cartpole_grpc_dqn.py` provides an example of how to use the gRPC interface to learn remotely.
 
-The main class that is used in this framework is `TorchBearerAgent`, implemented in `servers/`. The gRPC server has an interface very similar to it.
+The main class that is used in this framework is `TorchBringerAgent`, implemented in `servers/`. The gRPC server has an interface very similar to it.
 
-### TorchBearerAgent
+### TorchBringerAgent
 | Method | Parameters | Explanation |
 |---|---|---|
 | initialize() | config: dict | Initializes the agent according to the config. Read the config section for information on formatting |
@@ -16,7 +63,7 @@ The main class that is used in this framework is `TorchBearerAgent`, implemented
 | experience_and_optimize() | state: Tensor, reward: Tensor, terminal: bool | Performs an optimization step without selecting an action |
 
 ### gRPC interface
-Note that there is a client implemented in `servers/torchbearer_grpc_client.py` that has the exact same interface as `TorchBearerAgent`. This reference is mostly meant for building clients in other programming languages.
+Note that there is a client implemented in `servers/torchbringer_grpc_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
 
 | Method | Parameters | Explanation |
 |---|---|---|

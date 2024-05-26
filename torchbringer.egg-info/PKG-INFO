@@ -1,0 +1,22 @@
+Metadata-Version: 2.1
+Name: torchbringer
+Version: 0.1.0
+Summary: A PyTorch library for deep reinforcement learning 
+Home-page: https://github.com/moraguma/TorchBringer
+Author: Moraguma
+Author-email: g170603@dac.unicamp.br
+License: MIT
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Environment :: GPU :: NVIDIA CUDA
+Classifier: Programming Language :: Python
+License-File: LICENSE
+Requires-Dist: setuptools>=70.0.0
+Requires-Dist: torch==2.3.0
+Requires-Dist: gymnasium==0.29.1
+Requires-Dist: aim==3.19.3
+Requires-Dist: numpy
+Requires-Dist: protobuf
+Requires-Dist: grpcio

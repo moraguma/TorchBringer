@@ -1,0 +1,28 @@
+syntax = "proto3";
+package torchbringer.servers.grpc;
+
+// Interface exported by the server.
+service TorchBringerGRPCAgent {
+    rpc initialize(Config) returns (Confirmation) {}
+
+    rpc step(Percept) returns (Matrix) {}
+  }
+
+  message Config {
+    string serializedConfig = 1;
+  }
+
+  message Confirmation {
+    string info = 1;
+  }
+
+  message Matrix {
+    repeated int32 dimensions = 1;
+    repeated float values = 2;
+  }
+
+  message Percept {
+    Matrix state = 1;
+    float reward = 2;
+    bool terminal = 3;
+  }
