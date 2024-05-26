@@ -11,6 +11,7 @@ pip install --upgrade pip
 pip install torchbringer
 ```
 
+### Local
 Here's a simple project for running a TorchBringer agent on gymnasium's Cartpole environment.
 
 ```python
@@ -49,6 +50,19 @@ for i_episode in range(num_episodes):
             break
 ```
 
+### Server
+To start a TorchBringer server on a particular port, run
+
+```bash
+python -m torchbringer.servers.grpc.torchbringer_grpc_server <PORT>
+```
+
+You can communicate with this server by using the provided Python client (see below) or develop a client of your own from the files found in `torchbringer/servers/grpc` in this repo to communicate with the server from applications built with different programming languages. 
+
+```python
+from torchbringer.servers.grpc.torchbringer_grpc_client import TorchBringerGRPCAgentClient
+```
+
 ## Reference
 
 `cartpole_local_dqn.py` provides a simple example of TorchBringer being used on gymnasium's CartPole-v1 envinronment. `cartpole_grpc_dqn.py` provides an example of how to use the gRPC interface to learn remotely.
@@ -60,7 +74,6 @@ The main class that is used in this framework is `TorchBringerAgent`, implemente
 |---|---|---|
 | initialize() | config: dict | Initializes the agent according to the config. Read the config section for information on formatting |
 | step() | state: Tensor, reward: Tensor, terminal: bool | Performs an optimization step and returns the selected action for this  |
-| experience_and_optimize() | state: Tensor, reward: Tensor, terminal: bool | Performs an optimization step without selecting an action |
 
 ### gRPC interface
 Note that there is a client implemented in `servers/torchbringer_grpc_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
@@ -69,7 +82,6 @@ Note that there is a client implemented in `servers/torchbringer_grpc_client.py`
 |---|---|---|
 | initialize() | config: string | Accepts a serialized config dict |
 | step() | state: Matrix(dimensions list[int], value: list[float]), reward: float, terminal: bool | State should be given as a flattened matrix, action is returned the same way  |
-| experience_and_optimize() | state: Matrix(dimensions list[int], value: list[float]), reward: float, terminal: bool | State should be given as a flattened matrix |
 
 ## Config formatting
 The config file is a dictionary that specifies the behavior of the agent. The RL implementation is specified by the value of the key "type". It also accepts a variety of other arguments depending on the imeplementation type.
