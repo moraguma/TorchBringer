@@ -20,6 +20,8 @@ from itertools import count
 import torch
 from torchbringer.servers.torchbringer_agent import TorchBringerAgent
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 env = gym.make("CartPole-v1")
 state, info = env.reset()
 
@@ -33,7 +35,6 @@ steps_done = 0
 
 num_episodes = 600
 for i_episode in range(num_episodes):
-    # Initialize the environment and get its state
     state, info = env.reset()
     reward = torch.tensor([0.0], device=device)
     terminal = False
