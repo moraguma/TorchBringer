@@ -28,21 +28,12 @@ class TorchDeepRLGrpcServicer(pb2_grpc.TorchDeepRLGrpcServicer):
 
     def step(self, request, context):
         if self.torch_deep_rl is None:
-            return pb2.Matrix(dimensions=[], values=[0])
+            return pb2.Matrix(dimensions=[], values=[])
         action = self.torch_deep_rl.step(
             None if len(request.state.dimensions) == 0 else torch.tensor(np.reshape(request.state.values, tuple(request.state.dimensions)), dtype=torch.float32, device=device), 
             torch.tensor([request.reward], device=device), 
             request.terminal)
         return pb2.Matrix(dimensions=action.shape, values=action.flatten())
-
-    def experienceAndOptimize(self, request, context):
-        if self.torch_deep_rl is None:
-            return pb2.Confirmation(info="Agent not yet initialized!")
-        self.torch_deep_rl.experience_and_optimize(
-            None if len(request.state.dimensions) == 0 else np.reshape(request.state.values, tuple(request.state.dimensions)), 
-            torch.tensor([request.reward], device=device), 
-            request.terminal)
-        return pb2.Confirmation(info="Done")
 
 
 def serve(port):

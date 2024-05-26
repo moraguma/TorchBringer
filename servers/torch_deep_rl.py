@@ -1,4 +1,8 @@
 import components.builders as builders
+import torch
+
+# if GPU is to be used
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class TorchDeepRL():
     def __init__(self) -> None:
@@ -10,9 +14,6 @@ class TorchDeepRL():
     
 
     def step(self, state, reward, terminal):
-        return self.learner.step(state, reward, terminal)
-    
-
-    def experience_and_optimize(self, state, reward, terminal):
         self.learner.experience(state, reward, terminal)
         self.learner.optimize()
+        return torch.tensor([], device=device) if state is None else self.learner.select_action(state)

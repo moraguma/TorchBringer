@@ -21,9 +21,8 @@ class TorchDeepRLGrpcClient():
 
 
     def step(self, state, reward, terminal):
-        action = self.stub.step(pb2.Percept(state=pb2.Matrix(dimensions=state.shape, values=state.flatten()), reward=reward, terminal=terminal))
+        action = self.stub.step(pb2.Percept(
+            state=pb2.Matrix(dimensions=[], values=[]) if state is None else pb2.Matrix(dimensions=state.shape, values=state.flatten()), 
+            reward=reward, 
+            terminal=terminal))
         return np.reshape(action.values, tuple(action.dimensions))
-
-
-    def experience_and_optimize(self, state, reward, terminal):
-        return self.stub.experienceAndOptimize(pb2.Percept(state=pb2.Matrix(dimensions=[], values=[]), reward=reward, terminal=terminal))

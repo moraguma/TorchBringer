@@ -50,11 +50,6 @@ class TorchDeepRLGrpcStub(object):
                 request_serializer=torchdeeprl__pb2.Percept.SerializeToString,
                 response_deserializer=torchdeeprl__pb2.Matrix.FromString,
                 _registered_method=True)
-        self.experienceAndOptimize = channel.unary_unary(
-                '/torchdeeprl.TorchDeepRLGrpc/experienceAndOptimize',
-                request_serializer=torchdeeprl__pb2.Percept.SerializeToString,
-                response_deserializer=torchdeeprl__pb2.Confirmation.FromString,
-                _registered_method=True)
 
 
 class TorchDeepRLGrpcServicer(object):
@@ -73,12 +68,6 @@ class TorchDeepRLGrpcServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def experienceAndOptimize(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_TorchDeepRLGrpcServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -91,11 +80,6 @@ def add_TorchDeepRLGrpcServicer_to_server(servicer, server):
                     servicer.step,
                     request_deserializer=torchdeeprl__pb2.Percept.FromString,
                     response_serializer=torchdeeprl__pb2.Matrix.SerializeToString,
-            ),
-            'experienceAndOptimize': grpc.unary_unary_rpc_method_handler(
-                    servicer.experienceAndOptimize,
-                    request_deserializer=torchdeeprl__pb2.Percept.FromString,
-                    response_serializer=torchdeeprl__pb2.Confirmation.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -153,33 +137,6 @@ class TorchDeepRLGrpc(object):
             '/torchdeeprl.TorchDeepRLGrpc/step',
             torchdeeprl__pb2.Percept.SerializeToString,
             torchdeeprl__pb2.Matrix.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def experienceAndOptimize(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/torchdeeprl.TorchDeepRLGrpc/experienceAndOptimize',
-            torchdeeprl__pb2.Percept.SerializeToString,
-            torchdeeprl__pb2.Confirmation.FromString,
             options,
             channel_credentials,
             insecure,

@@ -6,8 +6,6 @@ service TorchDeepRLGrpc {
     rpc initialize(Config) returns (Confirmation) {}
 
     rpc step(Percept) returns (Matrix) {}
-
-    rpc experienceAndOptimize(Percept) returns (Confirmation) {} 
   }
 
   message Config {

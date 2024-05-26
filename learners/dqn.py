@@ -51,13 +51,6 @@ class DQN():
 
         self.steps_done = 0
 
-    def step(self, state, reward, terminal):
-        self.experience(state, reward, terminal)
-        self.optimize()
-        self.past_action = self.select_action(state)
-
-        return self.past_action
-
 
     def experience(self, state, reward, terminal):
         if not self.past_state is None:
@@ -117,6 +110,7 @@ class DQN():
         eps_threshold = self.epsilon()
         if sample > eps_threshold: # Action with largest Q value
             with torch.no_grad():
-                return self.policy_net(state).max(1).indices.view(1, 1)
+                self.past_action = self.policy_net(state).max(1).indices.view(1, 1)
         else: # Random action
-            return torch.tensor([[self.action_space.sample()]], device=device, dtype=torch.long)
+            self.past_action = torch.tensor([[self.action_space.sample()]], device=device, dtype=torch.long)
+        return self.past_action
