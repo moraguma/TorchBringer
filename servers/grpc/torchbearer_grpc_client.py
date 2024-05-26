@@ -7,13 +7,13 @@ import numpy as np
 import grpc
 import json
 
-import servers.grpc.torchdeeprl_pb2 as pb2
-import servers.grpc.torchdeeprl_pb2_grpc as pb2_grpc
+import servers.grpc.torchbearer_pb2 as pb2
+import servers.grpc.torchbearer_pb2_grpc as pb2_grpc
 
-class TorchDeepRLGrpcClient():
+class TorchBearerGRPCAgentClient():
     def __init__(self, port):
         self.channel = grpc.insecure_channel("localhost:" + str(port))
-        self.stub = pb2_grpc.TorchDeepRLGrpcStub(self.channel)
+        self.stub = pb2_grpc.TorchBearerGRPCAgentStub(self.channel)
     
 
     def initialize(self, config):

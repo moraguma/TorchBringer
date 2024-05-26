@@ -9,20 +9,20 @@ import grpc
 import json
 from concurrent import futures
 
-from servers.torch_deep_rl import TorchDeepRL
+from servers.torchbearer_agent import TorchBearerAgent
 
-import servers.grpc.torchdeeprl_pb2 as pb2
-import servers.grpc.torchdeeprl_pb2_grpc as pb2_grpc
+import servers.grpc.torchbearer_pb2 as pb2
+import servers.grpc.torchbearer_pb2_grpc as pb2_grpc
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class TorchDeepRLGrpcServicer(pb2_grpc.TorchDeepRLGrpcServicer):
+class TorchBearerGRPCAgentServicer(pb2_grpc.TorchBearerGRPCAgentServicer):
     def __init__(self):
         self.torch_deep_rl = None
 
     def initialize(self, request, context):
-        self.torch_deep_rl = TorchDeepRL()
+        self.torch_deep_rl = TorchBearerAgent()
         self.torch_deep_rl.initialize(json.loads(request.serializedConfig))
         return pb2.Confirmation(info="Initialized successfully")
 
@@ -38,7 +38,7 @@ class TorchDeepRLGrpcServicer(pb2_grpc.TorchDeepRLGrpcServicer):
 
 def serve(port):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    pb2_grpc.add_TorchDeepRLGrpcServicer_to_server(TorchDeepRLGrpcServicer(), server)
+    pb2_grpc.add_TorchBearerGRPCAgentServicer_to_server(TorchBearerGRPCAgentServicer(), server)
     server.add_insecure_port("[::]:" + port)
     server.start()
     print("Server started, listening on " + port)

@@ -9,7 +9,7 @@ from aim import Run
 
 import torch
 
-from servers.grpc.torch_deep_rl_grpc_client import TorchDeepRLGrpcClient
+from servers.grpc.torchbearer_grpc_client import TorchBearerGRPCAgentClient
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -64,7 +64,7 @@ config = {
         },
     ]
 }
-dqn = TorchDeepRLGrpcClient(50051)
+dqn = TorchBearerGRPCAgentClient(50051)
 dqn.initialize(config)
 run = Run(experiment="Grpc DQN Cartpole")
 

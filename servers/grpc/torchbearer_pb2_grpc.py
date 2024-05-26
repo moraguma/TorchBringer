@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import torchdeeprl_pb2 as torchdeeprl__pb2
+import torchbearer_pb2 as torchbearer__pb2
 
 GRPC_GENERATED_VERSION = '1.64.0'
 GRPC_VERSION = grpc.__version__
@@ -20,7 +20,7 @@ except ImportError:
 if _version_not_supported:
     warnings.warn(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in torchdeeprl_pb2_grpc.py depends on'
+        + f' but the generated code in torchbearer_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -30,7 +30,7 @@ if _version_not_supported:
     )
 
 
-class TorchDeepRLGrpcStub(object):
+class TorchBearerGRPCAgentStub(object):
     """Interface exported by the server.
     """
 
@@ -41,18 +41,18 @@ class TorchDeepRLGrpcStub(object):
             channel: A grpc.Channel.
         """
         self.initialize = channel.unary_unary(
-                '/torchdeeprl.TorchDeepRLGrpc/initialize',
-                request_serializer=torchdeeprl__pb2.Config.SerializeToString,
-                response_deserializer=torchdeeprl__pb2.Confirmation.FromString,
+                '/torchdeeprl.TorchBearerGRPCAgent/initialize',
+                request_serializer=torchbearer__pb2.Config.SerializeToString,
+                response_deserializer=torchbearer__pb2.Confirmation.FromString,
                 _registered_method=True)
         self.step = channel.unary_unary(
-                '/torchdeeprl.TorchDeepRLGrpc/step',
-                request_serializer=torchdeeprl__pb2.Percept.SerializeToString,
-                response_deserializer=torchdeeprl__pb2.Matrix.FromString,
+                '/torchdeeprl.TorchBearerGRPCAgent/step',
+                request_serializer=torchbearer__pb2.Percept.SerializeToString,
+                response_deserializer=torchbearer__pb2.Matrix.FromString,
                 _registered_method=True)
 
 
-class TorchDeepRLGrpcServicer(object):
+class TorchBearerGRPCAgentServicer(object):
     """Interface exported by the server.
     """
 
@@ -69,27 +69,27 @@ class TorchDeepRLGrpcServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_TorchDeepRLGrpcServicer_to_server(servicer, server):
+def add_TorchBearerGRPCAgentServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'initialize': grpc.unary_unary_rpc_method_handler(
                     servicer.initialize,
-                    request_deserializer=torchdeeprl__pb2.Config.FromString,
-                    response_serializer=torchdeeprl__pb2.Confirmation.SerializeToString,
+                    request_deserializer=torchbearer__pb2.Config.FromString,
+                    response_serializer=torchbearer__pb2.Confirmation.SerializeToString,
             ),
             'step': grpc.unary_unary_rpc_method_handler(
                     servicer.step,
-                    request_deserializer=torchdeeprl__pb2.Percept.FromString,
-                    response_serializer=torchdeeprl__pb2.Matrix.SerializeToString,
+                    request_deserializer=torchbearer__pb2.Percept.FromString,
+                    response_serializer=torchbearer__pb2.Matrix.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'torchdeeprl.TorchDeepRLGrpc', rpc_method_handlers)
+            'torchdeeprl.TorchBearerGRPCAgent', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('torchdeeprl.TorchDeepRLGrpc', rpc_method_handlers)
+    server.add_registered_method_handlers('torchdeeprl.TorchBearerGRPCAgent', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class TorchDeepRLGrpc(object):
+class TorchBearerGRPCAgent(object):
     """Interface exported by the server.
     """
 
@@ -107,9 +107,9 @@ class TorchDeepRLGrpc(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/torchdeeprl.TorchDeepRLGrpc/initialize',
-            torchdeeprl__pb2.Config.SerializeToString,
-            torchdeeprl__pb2.Confirmation.FromString,
+            '/torchdeeprl.TorchBearerGRPCAgent/initialize',
+            torchbearer__pb2.Config.SerializeToString,
+            torchbearer__pb2.Confirmation.FromString,
             options,
             channel_credentials,
             insecure,
@@ -134,9 +134,9 @@ class TorchDeepRLGrpc(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/torchdeeprl.TorchDeepRLGrpc/step',
-            torchdeeprl__pb2.Percept.SerializeToString,
-            torchdeeprl__pb2.Matrix.FromString,
+            '/torchdeeprl.TorchBearerGRPCAgent/step',
+            torchbearer__pb2.Percept.SerializeToString,
+            torchbearer__pb2.Matrix.FromString,
             options,
             channel_credentials,
             insecure,

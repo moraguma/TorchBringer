@@ -4,7 +4,7 @@ import torch
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class TorchDeepRL():
+class TorchBearerAgent():
     def __init__(self) -> None:
         self.learner = None
     

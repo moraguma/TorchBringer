@@ -2,7 +2,7 @@ syntax = "proto3";
 package torchdeeprl;
 
 // Interface exported by the server.
-service TorchDeepRLGrpc {
+service TorchBearerGRPCAgent {
     rpc initialize(Config) returns (Confirmation) {}
 
     rpc step(Percept) returns (Matrix) {}

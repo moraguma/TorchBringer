@@ -6,7 +6,7 @@ from aim import Run
 
 import torch
 
-from servers.torch_deep_rl import TorchDeepRL
+from servers.torchbearer_agent import TorchBearerAgent
 
 # if GPU is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,7 +61,7 @@ config = {
         },
     ]
 }
-dqn = TorchDeepRL()
+dqn = TorchBearerAgent()
 dqn.initialize(config)
 run = Run(experiment="DQN Cartpole")
 
