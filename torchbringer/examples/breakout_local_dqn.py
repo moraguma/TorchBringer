@@ -154,7 +154,7 @@ for i_episode in count():
         cummulative_reward += reward
         cummulative_loss += dqn.get_past_loss()
 
-        state = None if terminated else torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0) 
+        state = None if terminated else torch.tensor(observation, dtype=torch.uint8, device=device).unsqueeze(0) 
         reward = torch.tensor([reward], device=device)
         terminal = terminated or truncated
 
