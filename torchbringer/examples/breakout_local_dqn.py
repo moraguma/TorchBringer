@@ -76,7 +76,7 @@ config = {
         "end": 0.1,
         "steps_to_end": 1000000
     },
-    "batch_size": 2,
+    "batch_size": 32,
     "grad_clip_value": 100,
     "loss": "smooth_l1_loss",
     "optimizer": {
@@ -124,7 +124,7 @@ run = Run(experiment="DQN Breakout")
 run["hparams"] = config
 
 frames_done = 0
-log_interval = 2
+log_interval = 10000
 if torch.cuda.is_available():
     print("Running on GPU!")
     total_frames = 10000000
@@ -154,7 +154,7 @@ for i_episode in count():
         frames_done += 1
         if frames_done % log_interval == 0:
             current_time = time.time()
-            print("Finished %d/%d frames in %s - ETR: %ss; TE: %ss" % (frames_done, total_frames, datetime.timedelta(seconds=int(current_time - last_log_time)), datetime.timedelta(seconds=int((current_time - starting_time) / frames_done * total_frames)), datetime.timedelta(seconds=int(current_time - starting_time))))
+            print("Finished %d/%d frames in %s - ETR: %ss; TE: %ss" % (frames_done, total_frames, datetime.timedelta(seconds=int(current_time - last_log_time)), datetime.timedelta(seconds=int((current_time - starting_time) / frames_done * (total_frames - frames_done))), datetime.timedelta(seconds=int(current_time - starting_time))))
             last_log_time = current_time
 
         if terminal:
