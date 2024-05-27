@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 from torchbringer.components import epsilon
 from torchbringer.learners.dqn import DQN
-
+import torchbringer.components.layers as tb_layers
 LEARNER_STRING_TO_CLASS = {
     "dqn": DQN
 }
@@ -20,7 +20,8 @@ LAYER_STRING_TO_CLASS = {
     "linear": nn.Linear,
     "relu": nn.ReLU,
     "conv2d": nn.Conv2d,
-    "flatten": nn.Flatten
+    "flatten": nn.Flatten,
+    "normalize": tb_layers.Normalize
 }
 LOSS_STRING_TO_FUNC = {
     "smooth_l1_loss": nn.SmoothL1Loss()

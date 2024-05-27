@@ -22,7 +22,7 @@ class AtariEnv():
     
 
     def preprocess_state(self, state):
-        return cv2.resize(cv2.cvtColor(state, cv2.COLOR_RGB2GRAY), (110, 84))[:, 13:97] / 255.0
+        return cv2.resize(cv2.cvtColor(state, cv2.COLOR_RGB2GRAY), (110, 84))[:, 13:97]
 
 
     def get_current_state(self):
@@ -51,7 +51,7 @@ class AtariEnv():
 
     def reset(self):
         state, info = self.env.reset()
-        self.past_frames = np.zeros((self.stacked_frames, 84, 84), dtype=np.float16)
+        self.past_frames = np.zeros((self.stacked_frames, 84, 84), dtype=np.int8)
         self.past_frames[:, :, :] = self.preprocess_state(state)
 
         return self.get_current_state(), info
@@ -76,7 +76,7 @@ config = {
         "end": 0.1,
         "steps_to_end": 1000000
     },
-    "batch_size": 2,
+    "batch_size": 32,
     "grad_clip_value": 100,
     "loss": "smooth_l1_loss",
     "optimizer": {
@@ -86,6 +86,10 @@ config = {
     },
     "replay_buffer_size": 1000000,
     "network": [
+        {
+            "type": "normalize",
+            "max": 255.0
+        },
         {
             "type": "conv2d",
             "in_channels": 4,
