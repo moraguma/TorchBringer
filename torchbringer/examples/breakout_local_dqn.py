@@ -1,5 +1,7 @@
 # Based on Mnih, Volodymyr, et al. "Playing atari with deep reinforcement learning." arXiv preprint arXiv:1312.5602 (2013).
 
+import datetime
+import time
 import gymnasium as gym
 from itertools import count
 from aim import Run
@@ -20,7 +22,7 @@ class AtariEnv():
     
 
     def preprocess_state(self, state):
-        return cv2.resize(cv2.cvtColor(state, cv2.COLOR_RGB2GRAY), (110, 84))[:, 13:97]
+        return cv2.resize(cv2.cvtColor(state, cv2.COLOR_RGB2GRAY), (110, 84))[:, 13:97] / 255.0
 
 
     def get_current_state(self):
@@ -49,7 +51,7 @@ class AtariEnv():
 
     def reset(self):
         state, info = self.env.reset()
-        self.past_frames = np.zeros((self.stacked_frames, 84, 84))
+        self.past_frames = np.zeros((self.stacked_frames, 84, 84), dtype=np.float16)
         self.past_frames[:, :, :] = self.preprocess_state(state)
 
         return self.get_current_state(), info
@@ -74,7 +76,7 @@ config = {
         "end": 0.1,
         "steps_to_end": 1000000
     },
-    "batch_size": 32,
+    "batch_size": 2,
     "grad_clip_value": 100,
     "loss": "smooth_l1_loss",
     "optimizer": {
@@ -121,16 +123,18 @@ run = Run(experiment="DQN Breakout")
 
 run["hparams"] = config
 
-steps_done = 0
-
+frames_done = 0
+log_interval = 2
 if torch.cuda.is_available():
     print("Running on GPU!")
-    num_episodes = 600
+    total_frames = 10000000
 else:
     print("Running on CPU!")
-    num_episodes = 50
+    total_frames = 1000
 
-for i_episode in range(num_episodes):
+starting_time = time.time()
+last_log_time = time.time()
+for i_episode in count():
     # Initialize the environment and get its state
     state, info = env.reset()
     reward = torch.tensor([0.0], device=device)
@@ -147,10 +151,19 @@ for i_episode in range(num_episodes):
         reward = torch.tensor([reward], device=device)
         terminal = terminated or truncated
 
+        frames_done += 1
+        if frames_done % log_interval == 0:
+            current_time = time.time()
+            print("Finished %d/%d frames in %s - ETR: %ss; TE: %ss" % (frames_done, total_frames, datetime.timedelta(seconds=int(current_time - last_log_time)), datetime.timedelta(seconds=int((current_time - starting_time) / frames_done * total_frames)), datetime.timedelta(seconds=int(current_time - starting_time))))
+            last_log_time = current_time
+
         if terminal:
             run.track({"Episode reward": cummulative_reward}, step=i_episode)
 
             dqn.step(state, reward, terminal)
             break
 
-print('Complete')
+    if frames_done >= total_frames:
+        break
+
+print("Complete in %.2fs" % (time.time() - starting_time))
