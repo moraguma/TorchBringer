@@ -51,6 +51,8 @@ class DQN():
 
         self.steps_done = 0
 
+        self.past_loss = 0.0
+
 
     def experience(self, state, reward, terminal):
         if not self.past_state is None:
@@ -93,6 +95,7 @@ class DQN():
 
             # Compute loss
             step_loss = self.loss(state_action_values, expected_state_action_values.unsqueeze(1))
+            self.past_loss = step_loss.item()
 
             # Optimize the model
             self.optimizer.zero_grad()

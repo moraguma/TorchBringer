@@ -76,7 +76,7 @@ config = {
         "end": 0.1,
         "steps_to_end": 1000000
     },
-    "batch_size": 32,
+    "batch_size": 2,
     "grad_clip_value": 100,
     "loss": "smooth_l1_loss",
     "optimizer": {
@@ -141,11 +141,14 @@ for i_episode in count():
     terminal = False
 
     cummulative_reward = 0.0
+    cummulative_loss = 0.0
+    first_episode_frame = frames_done
     
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         observation, reward, terminated, truncated, _ = env.step(dqn.step(state, reward, terminal).item())
         cummulative_reward += reward
+        cummulative_loss += dqn.get_past_loss()
 
         state = None if terminated else torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0) 
         reward = torch.tensor([reward], device=device)
@@ -158,7 +161,7 @@ for i_episode in count():
             last_log_time = current_time
 
         if terminal:
-            run.track({"Episode reward": cummulative_reward}, step=i_episode)
+            run.track({"Episode reward": cummulative_reward, "Average loss": cummulative_loss / (frames_done - first_episode_frame)}, step=i_episode)
 
             dqn.step(state, reward, terminal)
             break
