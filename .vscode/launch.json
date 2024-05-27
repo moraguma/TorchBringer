@@ -5,12 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "All code debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": []
+        },
+        {
             "name": "GRPC Server",
             "type": "debugpy",
             "request": "launch",
             "program": "servers/grpc/torch_deep_rl_grpc_server.py",
             "console": "integratedTerminal",
-            "args": ["50051"]
+            "args": [
+                "50051"
+            ]
         }
     ]
 }

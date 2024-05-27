@@ -20,3 +20,8 @@ f(steps_done, *args)
 
 def exp_decrease(steps_done, start, end, steps_to_end):
     return end + (start - end) * math.exp(-1. * steps_done / steps_to_end)
+
+
+def lin_decrease(steps_done, start, end, steps_to_end):
+    progress = (steps_done / steps_to_end)
+    return end + (start - end) * (progress if progress <= 1 else 1.0)

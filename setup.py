@@ -21,6 +21,7 @@ setup(
         'gymnasium==0.29.1',
         'aim==3.19.3',
         'numpy',
+        'opencv-python',
         'protobuf',
         'grpcio'                    
     ],

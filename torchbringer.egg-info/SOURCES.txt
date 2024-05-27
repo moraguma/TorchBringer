@@ -10,6 +10,7 @@ torchbringer.egg-info/top_level.txt
 torchbringer/components/builders.py
 torchbringer/components/epsilon.py
 torchbringer/components/replay_memory.py
+torchbringer/examples/breakout_local_dqn.py
 torchbringer/examples/cartpole_grpc_dqn.py
 torchbringer/examples/cartpole_local_dqn.py
 torchbringer/learners/dqn.py

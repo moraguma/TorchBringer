@@ -13,11 +13,14 @@ SPACE_STRING_TO_CLASS = {
     "discrete": gym.spaces.Discrete
 }
 EPSILON_STRING_TO_FUNC = {
-    "exp_decrease": epsilon.exp_decrease
+    "exp_decrease": epsilon.exp_decrease,
+    "lin_decrease": epsilon.lin_decrease
 }
 LAYER_STRING_TO_CLASS = {
     "linear": nn.Linear,
-    "relu": nn.ReLU
+    "relu": nn.ReLU,
+    "conv2d": nn.Conv2d,
+    "flatten": nn.Flatten
 }
 LOSS_STRING_TO_FUNC = {
     "smooth_l1_loss": nn.SmoothL1Loss()

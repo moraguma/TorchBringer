@@ -71,7 +71,12 @@ class DQN():
             # Mask used to consider only non-terminal states
             non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
                                                 batch.next_state)), device=device, dtype=torch.bool)
-            non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
+            
+            non_final_next_states = [s for s in batch.next_state if s is not None]
+            if len(non_final_next_states) == 0:
+                non_final_next_states = None
+            else:
+                non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
             state_batch = torch.cat(batch.state)
             action_batch = torch.cat(batch.action)
             reward_batch = torch.cat(batch.reward)
@@ -81,8 +86,9 @@ class DQN():
 
             # Compute the expected Q values (r +  γ max_a ​Q(s′,a))
             next_state_values = torch.zeros(self.batch_size, device=device)
-            with torch.no_grad():
-                next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1).values
+            if not non_final_next_states is None:
+                with torch.no_grad():
+                    next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1).values
             expected_state_action_values = (next_state_values * self.gamma) + reward_batch
 
             # Compute loss
