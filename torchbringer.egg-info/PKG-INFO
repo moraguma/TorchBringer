@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: torchbringer
-Version: 0.2.6
+Version: 0.2.7
 Summary: A PyTorch library for deep reinforcement learning 
 Home-page: https://github.com/moraguma/TorchBringer
 Author: Moraguma
