@@ -81,10 +81,11 @@ config = {
     "loss": "smooth_l1_loss",
     "optimizer": {
         "type": "adamw",
-        "lr": 1e-4, 
+        "lr": 0.00025, 
         "amsgrad": True
     },
     "replay_buffer_size": 1000000,
+    "min_replay_size": 50000,
     "network": [
         {
             "type": "normalize",
@@ -93,29 +94,49 @@ config = {
         {
             "type": "conv2d",
             "in_channels": 4,
-            "out_channels": 16,
+            "out_channels": 32,
+            "kernel_size": 8
+        },
+        {"type": "relu"},
+        {
+            "type": "maxpool2d",
             "kernel_size": 8,
             "stride": 4
         },
-        {"type": "relu"},
         {
             "type": "conv2d",
-            "in_channels": 16,
-            "out_channels": 32,
-            "kernel_size": 4,
-            "stride": 1
+            "in_channels": 32,
+            "out_channels": 64,
+            "kernel_size": 4
         },
         {"type": "relu"},
+        {
+            "type": "maxpool2d",
+            "kernel_size": 4,
+            "stride": 2
+        },
+        {
+            "type": "conv2d",
+            "in_channels": 64,
+            "out_channels": 64,
+            "kernel_size": 3
+        },
+        {"type": "relu"},
+        {
+            "type": "maxpool2d",
+            "kernel_size": 3,
+            "stride": 1
+        },
         {"type": "flatten"},
         {
             "type": "linear",
-            "in_features": 9248, 
-            "out_features": 256
+            "in_features": 256, 
+            "out_features": 512
         },
         {"type": "relu"},
         {
             "type": "linear",
-            "in_features": 256,
+            "in_features": 512,
             "out_features": 4,
         }
     ]

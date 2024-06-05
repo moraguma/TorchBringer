@@ -20,6 +20,7 @@ LAYER_STRING_TO_CLASS = {
     "linear": nn.Linear,
     "relu": nn.ReLU,
     "conv2d": nn.Conv2d,
+    "maxpool2d": nn.MaxPool2d,
     "flatten": nn.Flatten,
     "normalize": tb_layers.Normalize
 }

@@ -25,6 +25,7 @@ class DQN():
         "loss": loss spec (read builders.py) -> Loss
         "optimizer": optimizer spec (read builders.py) -> Optimizer
         "replay_buffer_size": int -> capacity of the replay buffer
+        "min_replay_size": int -> minimum size the replay must have for optimization to happen
         "network": List of layer specs (read builders.py) -> Sequential network that will be used
     }
     """
@@ -37,6 +38,7 @@ class DQN():
         self.epsilon: Epsilon = builders.build_epsilon(config["epsilon"])
         self.batch_size = config["batch_size"]
         self.grad_clip_value = lu.value_or_none(config, "grad_clip_value")
+        self.min_replay_size = lu.value_or_default(config, "min_replay_size", 0)
 
         self.policy_net = builders.build_sequential(config["network"]).to(device)
         self.target_net = builders.build_sequential(config["network"]).to(device)
@@ -65,7 +67,7 @@ class DQN():
 
         
     def optimize(self):
-        if len(self.memory) >= self.batch_size:
+        if len(self.memory) >= max(self.batch_size, self.min_replay_size):
             # Transpose batch
             transitions = self.memory.sample(self.batch_size)
             batch = Transition(*zip(*transitions))
