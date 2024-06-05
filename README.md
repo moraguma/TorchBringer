@@ -55,7 +55,8 @@ for i_episode in range(num_episodes):
 To start a TorchBringer server on a particular port, run
 
 ```bash
-python -m torchbringer.servers.grpc.torchbringer_grpc_server <PORT>
+python -m torchbringer.servers.grpc.torchbringer_grpc_server <PORT> # For gRPC
+python -m torchbringer.servers.socket.torchbringer_socket_server <PORT> # For socket
 ```
 
 You can communicate with this server by using the provided Python client (see below) or develop a client of your own from the files found in `torchbringer/servers/grpc` in this repo to communicate with the server from applications built with different programming languages. 
@@ -77,12 +78,22 @@ The main class that is used in this framework is `TorchBringerAgent`, implemente
 | step() | state: Tensor, reward: Tensor, terminal: bool | Performs an optimization step and returns the selected action for this  |
 
 ### gRPC interface
-Note that there is a client implemented in `servers/torchbringer_grpc_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
+Note that there is a client implemented in `servers/grpc/torchbringer_grpc_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
 
 | Method | Parameters | Explanation |
 |---|---|---|
 | initialize() | config: string | Accepts a serialized config dict |
 | step() | state: Matrix(dimensions list[int], value: list[float]), reward: float, terminal: bool | State should be given as a flattened matrix, action is returned the same way  |
+
+### Socket interface
+Note that there is a client implemented in `servers/socket/torchbringer_socket_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
+
+Servers expect to receive a JSON string containing the field "method" for specifying the method by name as well as other parameters depending on the method. After being called, server will return a response in the form of another JSON string
+
+| Method | Parameters | Explanation | Returns |
+|---|---|---|---|
+| "initialize" | config: JSON object | Accepts a serialized config dict | Information in the form {"info": string} |
+| step() | state: list, reward: float, terminal: bool | The current percept from which to act | The action to take in the form {"action": list} |
 
 ## Config formatting
 The config file is a dictionary that specifies the behavior of the agent. The RL implementation is specified by the value of the key "type". It also accepts a variety of other arguments depending on the imeplementation type.
