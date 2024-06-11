@@ -25,10 +25,12 @@ LAYER_STRING_TO_CLASS = {
     "normalize": tb_layers.Normalize
 }
 LOSS_STRING_TO_FUNC = {
-    "smooth_l1_loss": nn.SmoothL1Loss()
+    "smooth_l1_loss": nn.SmoothL1Loss(),
+    "mseloss": nn.MSELoss()
 }
 OPTIMIZER_STRING_TO_CLASS = {
-    "adamw": optim.AdamW
+    "adamw": optim.AdamW,
+    "rmsprop": optim.RMSprop
 }
 
 def build_learner(config):

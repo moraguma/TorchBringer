@@ -18,7 +18,8 @@ class DQN():
     {
         "action_space": action space spec (read builders.py) -> The environment's action space
         "gamma": float -> Value of gamma
-        "tau": float -> Value of tau
+        "tau": float = 1.0 -> Value of tau
+        "target_network_update_frequency": int = 1 -> Steps before updating target network based on tau
         "epsilon": epsilon spec (read builders.py) -> Epsilon
         "batch_size": int -> Batch size
         "grad_clip_value": float -> Value to clip gradient. No clipping if not specified
@@ -34,7 +35,8 @@ class DQN():
         self.action_space = builders.build_space(config["action_space"])
 
         self.gamma = config["gamma"]
-        self.tau = config["tau"]
+        self.tau = lu.value_or_default(config, "tau", 1.0)
+        self.target_network_update_frequency = lu.value_or_default(config, "target_network_update_frequency", 1)
         self.epsilon: Epsilon = builders.build_epsilon(config["epsilon"])
         self.batch_size = config["batch_size"]
         self.grad_clip_value = lu.value_or_none(config, "grad_clip_value")
@@ -107,13 +109,15 @@ class DQN():
                 torch.nn.utils.clip_grad_value_(self.policy_net.parameters(), self.grad_clip_value)
             self.optimizer.step()
         
-        # Soft update of the target network's weights
-        # θ′ ← τ θ + (1 −τ )θ′
-        target_net_state_dict = self.target_net.state_dict()
-        policy_net_state_dict = self.policy_net.state_dict()
-        for key in policy_net_state_dict:
-            target_net_state_dict[key] = policy_net_state_dict[key]*self.tau + target_net_state_dict[key]*(1-self.tau)
-        self.target_net.load_state_dict(target_net_state_dict)
+        self.steps_done += 1
+        if self.steps_done % self.target_network_update_frequency:
+            # Soft update of the target network's weights
+            # θ′ ← τ θ + (1 −τ )θ′
+            target_net_state_dict = self.target_net.state_dict()
+            policy_net_state_dict = self.policy_net.state_dict()
+            for key in policy_net_state_dict:
+                target_net_state_dict[key] = policy_net_state_dict[key]*self.tau + target_net_state_dict[key]*(1-self.tau)
+            self.target_net.load_state_dict(target_net_state_dict)
 
 
     def select_action(self, state):

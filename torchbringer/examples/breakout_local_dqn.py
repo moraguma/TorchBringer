@@ -21,8 +21,11 @@ class AtariEnv():
         self.frames_clipped = frames_clipped
     
 
-    def preprocess_state(self, state):
-        return cv2.resize(cv2.cvtColor(state, cv2.COLOR_RGB2GRAY), (110, 84))[:, 13:97]
+    def preprocess_state(self, state, past_state=None):
+        grayscale_state = np.array(cv2.resize(cv2.cvtColor(state, cv2.COLOR_RGB2GRAY), (110, 84))[:, 13:97], dtype=np.uint8)
+        if past_state is None:
+            return grayscale_state
+        return cv2.max(grayscale_state, past_state)
 
 
     def get_current_state(self):
@@ -44,15 +47,15 @@ class AtariEnv():
                 break
 
         self.past_frames[:self.stacked_frames-1, :, :] = self.past_frames[1:self.stacked_frames, :, :]
-        self.past_frames[self.stacked_frames-1, :, :] = self.preprocess_state(observation)
+        self.past_frames[self.stacked_frames-1, :, :] = self.preprocess_state(observation, self.past_frames[-2])
 
         return self.get_current_state(), total_reward, terminated, truncated, info
 
 
     def reset(self):
         state, info = self.env.reset()
-        self.past_frames = np.zeros((self.stacked_frames, 84, 84), dtype=np.int8)
-        self.past_frames[:, :, :] = self.preprocess_state(state)
+        self.past_frames = np.zeros((self.stacked_frames, 84, 84), dtype=np.uint8)
+        self.past_frames[self.stacked_frames-1, :, :] = self.preprocess_state(state)
 
         return self.get_current_state(), info
 
@@ -69,7 +72,7 @@ config = {
         "n": 4
     },
     "gamma": 0.99,
-    "tau": 0.005,
+    "target_network_update_frequency": 10000,
     "epsilon": {
         "type": "lin_decrease",
         "start": 1.0,
@@ -77,12 +80,12 @@ config = {
         "steps_to_end": 1000000
     },
     "batch_size": 32,
-    "grad_clip_value": 100,
-    "loss": "smooth_l1_loss",
+    "grad_clip_value": 1,
+    "loss": "mseloss",
     "optimizer": {
-        "type": "adamw",
+        "type": "rmsprop",
         "lr": 0.00025, 
-        "amsgrad": True
+        "momentum": 0.95
     },
     "replay_buffer_size": 1000000,
     "min_replay_size": 50000,
@@ -95,42 +98,30 @@ config = {
             "type": "conv2d",
             "in_channels": 4,
             "out_channels": 32,
-            "kernel_size": 8
-        },
-        {"type": "relu"},
-        {
-            "type": "maxpool2d",
             "kernel_size": 8,
             "stride": 4
         },
+        {"type": "relu"},
         {
             "type": "conv2d",
             "in_channels": 32,
             "out_channels": 64,
-            "kernel_size": 4
-        },
-        {"type": "relu"},
-        {
-            "type": "maxpool2d",
             "kernel_size": 4,
             "stride": 2
         },
+        {"type": "relu"},
         {
             "type": "conv2d",
             "in_channels": 64,
             "out_channels": 64,
-            "kernel_size": 3
-        },
-        {"type": "relu"},
-        {
-            "type": "maxpool2d",
             "kernel_size": 3,
             "stride": 1
         },
+        {"type": "relu"},
         {"type": "flatten"},
         {
             "type": "linear",
-            "in_features": 256, 
+            "in_features": 3136, 
             "out_features": 512
         },
         {"type": "relu"},

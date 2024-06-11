@@ -107,7 +107,8 @@ The following specify the arguments allowed by each implementation type.
 |---|---|
 | "action_space": dict | The gym Space that represents the action space of the environment. Read the Space table on `Other specifications` |
 | "gamma": float | Value of gamma |
-| "tau": float | Value of tau
+| "tau": float = 1.0 | Value of tau |
+| "target_network_update_frequency": int = 1 | Steps before updating target network based on tau |
 | "epsilon": dict | The epsilon. Read the Epsilon table on `Other specifications` |
 | "batch_size": int | Batch size |
 | "grad_clip_value": float | Value to clip gradient. No clipping if not specified |
@@ -135,11 +136,13 @@ You can read `components/epsilon.py` to see how each of these are implemented
 | Type | Function |
 |---|---|
 | smooth_l1_loss | `torch.nn.SmoothL1Loss` |
+| mseloss | `nn.MSELoss` |
 
 #### Optimizer
 | Type | Class |
 |---|---|
 | adamw | `torch.optim.AdamW` |
+| rmsprop | `optim.RMSprop` |
 
 #### Layers
 | Type | Function |
