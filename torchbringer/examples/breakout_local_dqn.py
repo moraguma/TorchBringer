@@ -67,6 +67,7 @@ state, info = env.reset()
 
 config = {
     "type": "dqn",
+    "run_name": "DQN Breakout",
     "action_space": {
         "type": "discrete",
         "n": 4
@@ -135,9 +136,6 @@ config = {
 
 dqn = TorchBringerAgent()
 dqn.initialize(config)
-run = Run(experiment="DQN Breakout")
-
-run["hparams"] = config
 
 frames_done = 0
 log_interval = 10000
@@ -177,8 +175,6 @@ for i_episode in count():
             last_log_time = current_time
 
         if terminal:
-            run.track({"Episode reward": cummulative_reward, "Average loss": cummulative_loss / (frames_done - first_episode_frame)}, step=i_episode)
-
             dqn.step(state, reward, terminal)
             break
 

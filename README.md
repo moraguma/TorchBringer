@@ -105,6 +105,7 @@ The following specify the arguments allowed by each implementation type.
 ### DQN
 | Argument | Explanation |
 |---|---|
+| "run_name": string | If given, will track episode reward and average loss through Aim for this run |
 | "action_space": dict | The gym Space that represents the action space of the environment. Read the Space table on `Other specifications` |
 | "gamma": float | Value of gamma |
 | "tau": float = 1.0 | Value of tau |
