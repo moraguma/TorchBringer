@@ -110,7 +110,7 @@ class DQN():
             self.optimizer.step()
         
         self.steps_done += 1
-        if self.steps_done % self.target_network_update_frequency:
+        if self.steps_done % self.target_network_update_frequency == 0:
             # Soft update of the target network's weights
             # θ′ ← τ θ + (1 −τ )θ′
             target_net_state_dict = self.target_net.state_dict()

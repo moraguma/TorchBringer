@@ -25,7 +25,7 @@ config = {
         "n": 2
     },
     "gamma": 0.99,
-    "tau": 0.005,
+    "target_network_update_frequency": 350,
     "epsilon": {
         "type": "exp_decrease",
         "start": 0.9,
