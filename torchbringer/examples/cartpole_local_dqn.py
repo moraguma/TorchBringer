@@ -19,13 +19,14 @@ state, info = env.reset()
 n_observations = len(state)
 
 config = {
+    "run_name": "Local DQN CartPole",
     "type": "dqn",
     "action_space": {
         "type": "discrete",
         "n": 2
     },
     "gamma": 0.99,
-    "target_network_update_frequency": 350,
+    "tau": 0.005, 
     "epsilon": {
         "type": "exp_decrease",
         "start": 0.9,
@@ -63,9 +64,6 @@ config = {
 }
 dqn = TorchBringerAgent()
 dqn.initialize(config)
-run = Run(experiment="DQN Cartpole")
-
-run["hparams"] = config
 
 
 steps_done = 0
@@ -91,8 +89,6 @@ for i_episode in range(num_episodes):
         terminal = terminated or truncated
 
         if terminal:
-            run.track({"Duration": t + 1}, step=i_episode)
-
             dqn.step(state, reward, terminal)
             break
 

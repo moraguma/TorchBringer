@@ -24,4 +24,4 @@ def exp_decrease(steps_done, start, end, steps_to_end):
 
 def lin_decrease(steps_done, start, end, steps_to_end):
     progress = (steps_done / steps_to_end)
-    return end + (start - end) * (progress if progress <= 1 else 1.0)
+    return start + (end - start) * (progress if progress <= 1 else 1.0)
