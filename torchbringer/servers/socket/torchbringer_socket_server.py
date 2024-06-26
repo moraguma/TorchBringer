@@ -27,7 +27,7 @@ def run_server(server_socket: socket.socket, port):
         "terminal": bool -> If is terminal
     }
     """
-    server_socket.bind((socket.gethostname(), port))
+    server_socket.bind(("localhost", port))
     server_socket.listen(0)
 
     agent = TorchBringerAgent()
@@ -50,7 +50,7 @@ def run_server(server_socket: socket.socket, port):
                     case "step":
                         if try_correct_syntax(conn, data_dict, ["state", "reward", "terminal"]): continue
                         send_json_to_client(conn, {"action": agent.step(
-                            None if len(data_dict["state"]) == 0 else torch.tensor(data_dict["state"], device=device),
+                            None if len(data_dict["state"]) == 0 else torch.tensor(data_dict["state"], device=device, dtype=torch.float32),
                             torch.tensor([data_dict["reward"]], device=device),
                             data_dict["terminal"]).tolist()})
                     case _:

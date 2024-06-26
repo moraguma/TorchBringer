@@ -14,14 +14,15 @@
             "args": []
         },
         {
-            "name": "GRPC Server",
+            "name": "Server",
             "type": "debugpy",
             "request": "launch",
-            "program": "servers/grpc/torch_deep_rl_grpc_server.py",
+            "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "50051"
-            ]
+                "50052"
+            ],
+            "justMyCode": false
         }
     ]
 }
