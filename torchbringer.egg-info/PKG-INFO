@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: torchbringer
-Version: 0.3.5
+Version: 0.4.0
 Summary: A PyTorch library for deep reinforcement learning 
 Home-page: https://github.com/moraguma/TorchBringer
 Author: Moraguma
@@ -22,6 +22,7 @@ Requires-Dist: numpy
 Requires-Dist: opencv-python
 Requires-Dist: protobuf
 Requires-Dist: grpcio
+Requires-Dist: flask==3.0.3
 
 TorchBringer is an open-source framework that provides a simple interface for operating with pre-implemented deep reinforcement learning algorithms built on top of PyTorch. The interfaces provided can be used to operate deep RL agents either locally or remotely via gRPC. Currently, TorchBringer supports the following algorithms
 

@@ -12,12 +12,15 @@ torchbringer/components/epsilon.py
 torchbringer/components/layers.py
 torchbringer/components/replay_memory.py
 torchbringer/examples/breakout_local_dqn.py
+torchbringer/examples/cartpole_flask_dqn.py
 torchbringer/examples/cartpole_grpc_dqn.py
 torchbringer/examples/cartpole_local_dqn.py
 torchbringer/examples/cartpole_socket_dqn.py
 torchbringer/learners/dqn.py
 torchbringer/learners/learner_utils.py
 torchbringer/servers/torchbringer_agent.py
+torchbringer/servers/flask/torchbringer_flask_client.py
+torchbringer/servers/flask/torchbringer_flask_server.py
 torchbringer/servers/grpc/torchbringer_grpc_client.py
 torchbringer/servers/grpc/torchbringer_grpc_server.py
 torchbringer/servers/grpc/torchbringer_pb2.py

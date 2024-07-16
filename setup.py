@@ -8,7 +8,7 @@ setup(
     name='torchbringer',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version='0.3.5',    
+    version='0.4.0',    
     description='A PyTorch library for deep reinforcement learning ',
     url='https://github.com/moraguma/TorchBringer',
     author='Moraguma',
@@ -23,7 +23,8 @@ setup(
         'numpy',
         'opencv-python',
         'protobuf',
-        'grpcio'                    
+        'grpcio',
+        'flask==3.0.3'             
     ],
 
     classifiers=[

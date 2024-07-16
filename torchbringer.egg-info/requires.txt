@@ -6,3 +6,4 @@ numpy
 opencv-python
 protobuf
 grpcio
+flask==3.0.3
