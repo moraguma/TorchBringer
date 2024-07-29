@@ -20,6 +20,9 @@ n_observations = len(state)
 
 config = {
     "run_name": "Local DQN CartPole",
+    "save_every_steps": 1000,
+    "save_path": "cartpole_local_dqn",
+    "load_path": "cartpole_local_dqn",
     "type": "dqn",
     "action_space": {
         "type": "discrete",

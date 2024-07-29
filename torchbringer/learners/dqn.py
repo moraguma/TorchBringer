@@ -129,3 +129,25 @@ class DQN():
         else: # Random action
             self.past_action = torch.tensor([[self.action_space.sample()]], device=device, dtype=torch.long)
         return self.past_action
+
+
+    def get_checkpoint_dict(self):
+        return {
+            "policy_net": self.policy_net.state_dict(),
+            "target_net": self.target_net.state_dict(),
+            "memory": self.memory,
+            "optimizer": self.optimizer.state_dict(),
+            "loss": self.loss,
+            "epsilon": self.epsilon,
+            "steps_done": self.steps_done,
+        }
+    
+
+    def load_checkpoint(self, checkpoint):
+        self.policy_net.load_state_dict(checkpoint["policy_net"])
+        self.target_net.load_state_dict(checkpoint["target_net"])
+        self.memory = checkpoint["memory"]
+        self.optimizer.load_state_dict(checkpoint["optimizer"])
+        self.loss = checkpoint["loss"]
+        self.epsilon = checkpoint["epsilon"]
+        self.steps_done = checkpoint["steps_done"]

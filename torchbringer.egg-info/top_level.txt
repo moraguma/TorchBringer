@@ -1,4 +1,5 @@
 build
+checkpoints
 dist
 scripts
 servers

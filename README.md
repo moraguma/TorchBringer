@@ -56,6 +56,7 @@ To start a TorchBringer server on a particular port, run
 
 ```bash
 python -m torchbringer.servers.grpc.torchbringer_grpc_server <PORT> # For gRPC
+flask --app torchbringer.servers.flask.torchbringer_flask_server run -p <PORT> # For flask
 python -m torchbringer.servers.socket.torchbringer_socket_server <PORT> # For socket
 ```
 
@@ -76,6 +77,14 @@ The main class that is used in this framework is `TorchBringerAgent`, implemente
 |---|---|---|
 | initialize() | config: dict | Initializes the agent according to the config. Read the config section for information on formatting |
 | step() | state: Tensor, reward: Tensor, terminal: bool | Performs an optimization step and returns the selected action for this  |
+
+### REST interface
+Note that there is a client implemented in `servers/grpc/torchbringer_flask_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
+
+| Method | Parameters | Explanation |
+|---|---|---|
+| initialize | config: string | Accepts a serialized config dict |
+| step | state: list[float], reward: float, terminal: bool | State should be given as a flattened matrix, action is returned the same way  |
 
 ### gRPC interface
 Note that there is a client implemented in `servers/grpc/torchbringer_grpc_client.py` that has the exact same interface as `TorchBringerAgent`. This reference is mostly meant for building clients in other programming languages.
@@ -102,10 +111,19 @@ Currently supported implementations are `dqn`.
 
 The following specify the arguments allowed by each implementation type.
 
-### DQN
+### TorchbringerAgent
+General config options used for all TorchBriger agents
+
 | Argument | Explanation |
 |---|---|
 | "run_name": string | If given, will track episode reward and average loss through Aim for this run |
+| "save_every_steps": int | If given, will save the agent every given steps |
+| "save_path": string | Will save the agent with the given path (starting from checkpoints/) |
+| "load_path": string | If given, will try loading agent from given path (starting from checkpoints/) |
+
+### DQN
+| Argument | Explanation |
+|---|---|
 | "action_space": dict | The gym Space that represents the action space of the environment. Read the Space table on `Other specifications` |
 | "gamma": float | Value of gamma |
 | "tau": float = 1.0 | Value of tau |
