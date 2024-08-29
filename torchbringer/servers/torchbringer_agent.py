@@ -82,6 +82,7 @@ class TorchBringerAgent():
             os.makedirs("checkpoints")
 
         torch.save(to_save, f"checkpoints/{path}.pkl")
+        torch.save(to_save, f"checkpoints/{path}_backup.pkl")
 
         if self.verbose:
             print(f"Saved checkpoint {path} @ {strftime('%Y-%m-%d %H:%M:%S', gmtime())}")
