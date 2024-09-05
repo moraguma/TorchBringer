@@ -1,0 +1,1 @@
+flask --app torchbringer.servers.flask.torchbringer_flask_server run
