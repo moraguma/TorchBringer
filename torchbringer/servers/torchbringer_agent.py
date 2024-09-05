@@ -16,6 +16,7 @@ class TorchBringerAgent():
         self.learner = None
         self.config = None
         self.elapsed_time = 0
+        self.elapsed_memory_time = 0
     
 
     def initialize(self, config):
@@ -72,14 +73,20 @@ class TorchBringerAgent():
         if self.save_every_steps > 0:
             self.step_counter += 1
             if self.step_counter == self.save_every_steps:
+                self.elapsed_time += time.time_ns() - time_i
+                time_i = time.time_ns()
+
                 self.step_counter = 0
                 self.save(self.save_path)
+
+                self.elapsed_memory_time += time.time_ns() - time_i
+                time_i = time.time_ns()
                 
         ret_val = torch.tensor([], device=device) if state is None else self.learner.select_action(state)
 
         self.elapsed_time += time.time_ns() - time_i
         if terminal and self.verbose:
-            print("Finished episode - Time elapsed: {%:.3f}".format(float(self.elapsed_time) / 10**9))
+            print("Finished episode - Agent elapsed: {:.3f}; Memory time: {:.3f}".format(float(self.elapsed_time) / 10**9, float(self.elapsed_memory_time) / 10**9))
 
         return ret_val
     
