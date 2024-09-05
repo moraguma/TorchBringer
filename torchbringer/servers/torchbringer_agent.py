@@ -1,4 +1,5 @@
 import os
+import time
 from time import gmtime, strftime
 import torchbringer.components.builders as builders
 import torch
@@ -14,9 +15,12 @@ class TorchBringerAgent():
 
         self.learner = None
         self.config = None
+        self.elapsed_time = 0
     
 
     def initialize(self, config):
+        time_i = time.time_ns()
+
         data = None
         if "load_path" in config and os.path.isfile(f"checkpoints/{config['load_path']}.pkl"):
             data = torch.load(f"checkpoints/{config['load_path']}.pkl")
@@ -44,9 +48,13 @@ class TorchBringerAgent():
 
         if not data is None:
             self.learner.load_checkpoint(data["checkpoint"])
+        
+        self.elapsed_time += time.time_ns() - time_i
 
 
     def step(self, state, reward, terminal):
+        time_i = time.time_ns()
+
         self.learner.experience(state, reward, terminal)
         self.learner.optimize()
 
@@ -67,8 +75,13 @@ class TorchBringerAgent():
                 self.step_counter = 0
                 self.save(self.save_path)
                 
+        ret_val = torch.tensor([], device=device) if state is None else self.learner.select_action(state)
 
-        return torch.tensor([], device=device) if state is None else self.learner.select_action(state)
+        self.elapsed_time += time.time_ns() - time_i
+        if terminal and self.verbose:
+            print("Finished episode - Time elapsed: {%:.3f}".format(float(self.elapsed_time) / 10**9))
+
+        return ret_val
     
 
     def save(self, path):

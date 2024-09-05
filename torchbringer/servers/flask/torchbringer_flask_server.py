@@ -26,7 +26,7 @@ def initialize():
             data_dict = load_and_check_dict(request, args)
             if data_dict is None: return {"info": MISSING_ARGS % [", ".join(args)]}
 
-            agent = TorchBringerAgent()
+            agent = TorchBringerAgent(verbose=True)
             agent.initialize(data_dict["config"])
             return {"info": "Agent initialized"}
         except Exception as e:
